@@ -13,18 +13,20 @@
 template<typename T>
 class Matrix {
 private:
-    const int kSizeX;
-    const int kSizeY;
+    int size_x;
+    int size_y;
     T** matrix_;
 
     // TODO document this all
     void InitialiseMatrix(T initial_value);
     void InitialiseMatrix(std::vector<std::vector<T>> initial_vector);
-    void AssertDimensions(int size_y, int size_x);
-    int AssertAndGetWidth(std::vector<std::vector<T>> initial_vector);
-    int AssertAndGetHeight(std::vector<std::vector<T>> initial_vector);
+    void AssertDimensions(int size_y, int size_x) const;
+    int AssertAndGetWidth(std::vector<std::vector<T>> initial_vector) const;
+    int AssertAndGetHeight(std::vector<std::vector<T>> initial_vector) const;
     // TODO document GetLongestElemLength()
     std::optional<T> GetLongestElemLength() const;
+    // TODO document CopyMatrix(const Matrix& other)
+    void CopyMatrix(const Matrix& other);
 public:
     /**
      * Initialises a new empty Matrix sized size_y * size_x filled with
@@ -53,13 +55,13 @@ public:
     Matrix(const Matrix& other);
     // TODO implement move constructor
     Matrix(Matrix&& other);
-    // TODO document this
+    // TODO comment ToString()
     std::string ToString() const;
 };
 
 template<typename T>
 Matrix<T>::Matrix(const int size_y, const int size_x, const T initial_value)
-        : kSizeY(size_y), kSizeX(size_x) {
+        : size_y(size_y), size_x(size_x) {
     // throws an invalid_argument if dimensions are not positive.
     AssertDimensions(size_y, size_x);
     InitialiseMatrix(initial_value);
@@ -67,21 +69,27 @@ Matrix<T>::Matrix(const int size_y, const int size_x, const T initial_value)
 
 template<typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T>> initial_vector)
-        : kSizeY(AssertAndGetHeight(initial_vector)),
-        kSizeX(AssertAndGetWidth(initial_vector)) {
+        : size_y(AssertAndGetHeight(initial_vector)),
+          size_x(AssertAndGetWidth(initial_vector)) {
     InitialiseMatrix(initial_vector);
 }
 
 template<typename T>
+Matrix<T>::Matrix(const Matrix& other)
+        : size_y(other.size_y), size_x(other.size_x) {
+    CopyMatrix(other);
+}
+
+template<typename T>
 Matrix<T>::~Matrix() {
-    for (int i = 0; i < kSizeY; i++) {
+    for (int i = 0; i < size_y; i++) {
         delete[] matrix_[i];
     }
     delete[] matrix_;
 }
 
 template<typename T>
-void Matrix<T>::AssertDimensions(const int size_y, const int size_x) {
+void Matrix<T>::AssertDimensions(const int size_y, const int size_x) const {
     if (size_y < 1) {
         throw std::invalid_argument("Matrix dimensions must be positive! "
                                     "Received: " + std::to_string(size_y)
@@ -99,7 +107,8 @@ void Matrix<T>::AssertDimensions(const int size_y, const int size_x) {
 }
 
 template<typename T>
-int Matrix<T>::AssertAndGetHeight(std::vector<std::vector<T>> initial_vector) {
+int Matrix<T>::AssertAndGetHeight(
+        std::vector<std::vector<T>> initial_vector) const {
     if (initial_vector.size() < 1) {
         throw std::invalid_argument("Matrix dimensions must be positive! "
                                     "Received: "
@@ -110,7 +119,8 @@ int Matrix<T>::AssertAndGetHeight(std::vector<std::vector<T>> initial_vector) {
 }
 
 template<typename T>
-int Matrix<T>::AssertAndGetWidth(std::vector<std::vector<T>> initial_vector) {
+int Matrix<T>::AssertAndGetWidth(
+        std::vector<std::vector<T>> initial_vector) const {
     // first we need to check if initial_vector[0] exists
     // technically it's pointless to call AssertAndGetWidth twice,
     // but arguments in initializer list don't have to be executed in order
@@ -139,10 +149,10 @@ int Matrix<T>::AssertAndGetWidth(std::vector<std::vector<T>> initial_vector) {
 
 template<typename T>
 void Matrix<T>::InitialiseMatrix(const T initial_value) {
-    matrix_ = new T*[kSizeY];
-    for (int i = 0; i < kSizeY; i++) {
-        matrix_[i] = new T[kSizeX];
-        for (int j = 0; j < kSizeX; j++) {
+    matrix_ = new T*[size_y];
+    for (int i = 0; i < size_y; i++) {
+        matrix_[i] = new T[size_x];
+        for (int j = 0; j < size_x; j++) {
             matrix_[i][j] = initial_value;
         }
     }
@@ -151,11 +161,22 @@ void Matrix<T>::InitialiseMatrix(const T initial_value) {
 template<typename T>
 void Matrix<T>::InitialiseMatrix(
         const std::vector<std::vector<T>> initial_vector) {
-    matrix_ = new T*[kSizeY];
-    for (int i = 0; i < kSizeY; i++) {
-        matrix_[i] = new T[kSizeX];
-        for (int j = 0; j < kSizeX; j++) {
+    matrix_ = new T*[size_y];
+    for (int i = 0; i < size_y; i++) {
+        matrix_[i] = new T[size_x];
+        for (int j = 0; j < size_x; j++) {
             matrix_[i][j] = initial_vector[i][j];
+        }
+    }
+}
+
+template<typename T>
+void Matrix<T>::CopyMatrix(const Matrix& other) {
+    matrix_ = new T*[size_y];
+    for (int i = 0; i < size_y; i++) {
+        matrix_[i] = new T[size_x];
+        for (int j = 0; j < size_x; j++) {
+            matrix_[i][j] = other.matrix_[i][j];
         }
     }
 }
@@ -166,8 +187,8 @@ std::optional<T> Matrix<T>::GetLongestElemLength() const {
     int longest_length = -1;
     std::stringstream elemString;
 
-    for (int i = 0; i < kSizeX; i++) {
-        for (int j = 0; j < kSizeY; j++) {
+    for (int i = 0; i < size_x; i++) {
+        for (int j = 0; j < size_y; j++) {
             elemString << matrix_[i][j];
             int tmp_length = elemString.str().size();
             if (tmp_length > longest_length) {
@@ -189,8 +210,8 @@ std::string Matrix<T>::ToString() const {
     std::stringstream to_string;
     int longest_length = GetLongestElemLength().value() + 4;
 
-    for (int i = 0; i < kSizeY; i++) {
-        for (int j = 0; j < kSizeX; j++) {
+    for (int i = 0; i < size_y; i++) {
+        for (int j = 0; j < size_x; j++) {
             to_string << std::right << std::setw(longest_length)
             << matrix_[i][j];
         }
