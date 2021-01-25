@@ -48,13 +48,17 @@ public:
     // undefined behaviour when given size is larger than array's length
     Matrix(std::vector<std::vector<T>> initial_vector);
 
-    // TODO comment this?
+    // TODO document ~Matrix?
     ~Matrix();
 
-    // TODO implement copy constructor
+    // TODO document copy constructor
     Matrix(const Matrix& other);
     // TODO implement move constructor
     Matrix(Matrix&& other);
+
+    // TODO document operator=()
+    Matrix& operator=(const Matrix& other);
+
     // TODO comment ToString()
     std::string ToString() const;
 };
@@ -75,7 +79,7 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> initial_vector)
 }
 
 template<typename T>
-Matrix<T>::Matrix(const Matrix& other)
+Matrix<T>::Matrix(const Matrix<T>& other)
         : size_y(other.size_y), size_x(other.size_x) {
     CopyMatrix(other);
 }
@@ -171,7 +175,7 @@ void Matrix<T>::InitialiseMatrix(
 }
 
 template<typename T>
-void Matrix<T>::CopyMatrix(const Matrix& other) {
+void Matrix<T>::CopyMatrix(const Matrix<T>& other) {
     matrix_ = new T*[size_y];
     for (int i = 0; i < size_y; i++) {
         matrix_[i] = new T[size_x];
@@ -179,6 +183,22 @@ void Matrix<T>::CopyMatrix(const Matrix& other) {
             matrix_[i][j] = other.matrix_[i][j];
         }
     }
+}
+
+template<typename T>
+Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) {
+    if (&other != this) {
+        for (int i = 0; i < size_y; i++) {
+            delete[] matrix_[i];
+        }
+        delete[] matrix_;
+    }
+
+    size_y = other.size_y;
+    size_x = other.size_x;
+    CopyMatrix(other);
+
+    return *this;
 }
 
 template<typename T>
@@ -208,6 +228,7 @@ std::optional<T> Matrix<T>::GetLongestElemLength() const {
 template<typename T>
 std::string Matrix<T>::ToString() const {
     std::stringstream to_string;
+    // FIXME magic number '4' constants.cpp file?
     int longest_length = GetLongestElemLength().value() + 4;
 
     for (int i = 0; i < size_y; i++) {
