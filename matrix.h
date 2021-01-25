@@ -187,8 +187,8 @@ std::optional<T> Matrix<T>::GetLongestElemLength() const {
     int longest_length = -1;
     std::stringstream elemString;
 
-    for (int i = 0; i < size_x; i++) {
-        for (int j = 0; j < size_y; j++) {
+    for (int i = 0; i < size_y; i++) {
+        for (int j = 0; j < size_x; j++) {
             elemString << matrix_[i][j];
             int tmp_length = elemString.str().size();
             if (tmp_length > longest_length) {
