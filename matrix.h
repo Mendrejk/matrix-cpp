@@ -6,6 +6,7 @@
 #include <sstream>
 #include <optional>
 #include <iomanip>
+#include <iostream>
 
 /**
  * A class representing a two-dimensional mathematical matrix.
@@ -69,6 +70,8 @@ Matrix<T>::Matrix(const int size_y, const int size_x, const T initial_value)
     // throws an invalid_argument if dimensions are not positive.
     AssertDimensions(size_y, size_x);
     InitialiseMatrix(initial_value);
+
+    std::cout << "Parametric constructor" << std::endl;
 }
 
 template<typename T>
@@ -82,14 +85,27 @@ template<typename T>
 Matrix<T>::Matrix(const Matrix<T>& other)
         : size_y(other.size_y), size_x(other.size_x) {
     CopyMatrix(other);
+    std::cout << "Copy constructor" << std::endl;
+}
+
+template<typename T>
+Matrix<T>::Matrix(Matrix&& other)
+        : size_y(other.size_y), size_x(other.size_x) {
+    matrix_ = other.matrix_;
+    other.matrix_ = nullptr;
+    std::cout << "Move constructor" << std::endl;
 }
 
 template<typename T>
 Matrix<T>::~Matrix() {
-    for (int i = 0; i < size_y; i++) {
-        delete[] matrix_[i];
+    if (matrix_ != nullptr) {
+        for (int i = 0; i < size_y; i++) {
+            if (matrix_[i] != nullptr) {
+                delete[] matrix_[i];
+            }
+        }
+        delete[] matrix_;
     }
-    delete[] matrix_;
 }
 
 template<typename T>
@@ -198,6 +214,7 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) {
     size_x = other.size_x;
     CopyMatrix(other);
 
+    std::cout << "operator=" << std::endl;
     return *this;
 }
 
