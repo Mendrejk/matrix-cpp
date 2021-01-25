@@ -24,7 +24,7 @@ private:
     int AssertAndGetWidth(std::vector<std::vector<T>> initial_vector);
     int AssertAndGetHeight(std::vector<std::vector<T>> initial_vector);
     // TODO document GetLongestElemLength()
-    std::optional<T> GetLongestElemLength();
+    std::optional<T> GetLongestElemLength() const;
 public:
     /**
      * Initialises a new empty Matrix sized size_y * size_x filled with
@@ -51,7 +51,7 @@ public:
     // TODO implement move constructor
     Matrix(Matrix&& other);
     // TODO document this
-    std::string ToString();
+    std::string ToString() const;
 };
 
 template<typename T>
@@ -150,7 +150,7 @@ void Matrix<T>::InitialiseMatrix(
 }
 
 template<typename T>
-std::optional<T> Matrix<T>::GetLongestElemLength() {
+std::optional<T> Matrix<T>::GetLongestElemLength() const {
     // initial value
     int longest_length = -1;
     std::stringstream elemString;
@@ -174,7 +174,7 @@ std::optional<T> Matrix<T>::GetLongestElemLength() {
 }
 
 template<typename T>
-std::string Matrix<T>::ToString() {
+std::string Matrix<T>::ToString() const {
     std::stringstream to_string;
     int longest_length = GetLongestElemLength().value() + 4;
 
@@ -186,6 +186,11 @@ std::string Matrix<T>::ToString() {
         to_string << '\n';
     }
     return to_string.str();
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream &strm, const Matrix<T> &matrix) {
+    return strm << matrix.ToString();
 }
 
 #endif //MATRIX_CPP_MATRIX_H

@@ -13,6 +13,6 @@ int main() {
             {9, -43141, 71}
         };
     Matrix<int> test_initial_vector(test_vector);
-    std::cout << test_initial_vector.ToString() << std::endl;
+    std::cout << test_initial_vector << std::endl;
     return 0;
 }
