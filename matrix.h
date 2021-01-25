@@ -46,6 +46,9 @@ public:
     // undefined behaviour when given size is larger than array's length
     Matrix(std::vector<std::vector<T>> initial_vector);
 
+    // TODO comment this?
+    ~Matrix();
+
     // TODO implement copy constructor
     Matrix(const Matrix& other);
     // TODO implement move constructor
@@ -67,6 +70,14 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> initial_vector)
         : kSizeY(AssertAndGetHeight(initial_vector)),
         kSizeX(AssertAndGetWidth(initial_vector)) {
     InitialiseMatrix(initial_vector);
+}
+
+template<typename T>
+Matrix<T>::~Matrix() {
+    for (int i = 0; i < kSizeY; i++) {
+        delete[] matrix_[i];
+    }
+    delete[] matrix_;
 }
 
 template<typename T>
