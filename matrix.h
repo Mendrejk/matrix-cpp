@@ -74,6 +74,8 @@ public:
 
     // TODO comment Add()
     std::optional<Matrix> Add(const Matrix& other) const;
+    // TODO comment Subtract()
+    std::optional<Matrix> Subtract(const Matrix& other) const;
 };
 
 template<typename T>
@@ -290,15 +292,32 @@ std::string Matrix<T>::ToString() const {
 template<typename T>
 std::optional<Matrix<T>> Matrix<T>::Add(const Matrix& other) const {
     if (HasSameDimensions(other)) {
-        Matrix result(*this);
+        Matrix addition(*this);
 
         for (int i = 0; i < size_y_; i++) {
             for (int j = 0; j < size_x_; j++) {
-                result.matrix_[i][j] += other.matrix_[i][j];
+                addition.matrix_[i][j] += other.matrix_[i][j];
             }
         }
 
-        return result;
+        return addition;
+    } else {
+        return { };
+    }
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix &other) const {
+    if (HasSameDimensions(other)) {
+        Matrix subtraction(*this);
+
+        for (int i = 0; i < size_y_; i++) {
+            for (int j = 0; j < size_x_; j++) {
+                subtraction.matrix_[i][j] -= other.matrix_[i][j];
+            }
+        }
+
+        return subtraction;
     } else {
         return { };
     }
