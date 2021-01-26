@@ -3,7 +3,7 @@
 #include <vector>
 
 int main() {
-    Matrix<int> test_initial_value(3, 2, 0);
+    Matrix<int> test_initial_value(4, 3, -1);
     std::vector<std::vector<int>> test_vector =
         {
             {1, 24781237, 3},
@@ -16,5 +16,7 @@ int main() {
     Matrix<int> test_copy(test_initial_vector);
     test_copy = test_initial_value;
     std::cout << test_copy << std::endl;
+
+    std::cout << test_initial_vector.Add(test_copy).value() << std::endl;
     return 0;
 }
