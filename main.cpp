@@ -18,6 +18,6 @@ int main() {
     std::cout << test_copy << std::endl;
 
     std::cout << test_initial_vector.Add(test_copy).value() << std::endl;
-    std::cout << test_initial_vector.Subtract(test_copy).value() << std::endl;
+    std::cout << ((test_initial_vector - test_copy).value() - test_copy).value() << std::endl;
     return 0;
 }

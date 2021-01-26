@@ -73,9 +73,20 @@ public:
     std::string ToString() const;
 
     // TODO comment Add()
+    // TODO add version for if this is an rvalue
     std::optional<Matrix> Add(const Matrix& other) const;
+
+    // TODO comment operator+()
+    // TODO add version for if this is an rvalue
+    std::optional<Matrix> operator+(const Matrix& other) const;
+
     // TODO comment Subtract()
+    // TODO add version for if this is an rvalue
     std::optional<Matrix> Subtract(const Matrix& other) const;
+
+    // TODO comment operator-()
+    // TODO add version for if this is an rvalue
+    std::optional<Matrix> operator-(const Matrix& other) const;
 };
 
 template<typename T>
@@ -307,6 +318,11 @@ std::optional<Matrix<T>> Matrix<T>::Add(const Matrix& other) const {
 }
 
 template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix &other) const {
+    return Add(other);
+}
+
+template<typename T>
 std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix &other) const {
     if (HasSameDimensions(other)) {
         Matrix subtraction(*this);
@@ -321,6 +337,11 @@ std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix &other) const {
     } else {
         return { };
     }
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix &other) const {
+    return Subtract(other);
 }
 
 template<typename T>
