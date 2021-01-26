@@ -18,15 +18,19 @@ private:
     int size_y;
     T** matrix_;
 
-    // TODO document this all
+    // TODO document InitialiseMatrix(T)
     void InitialiseMatrix(T initial_value);
+    // TODO document InitialiseMatrix(vec<vec<T>>)
     void InitialiseMatrix(std::vector<std::vector<T>> initial_vector);
+    // TODO document AssertDimensions
     void AssertDimensions(int size_y, int size_x) const;
+    // TODO document AssertAndGetWidth
     int AssertAndGetWidth(std::vector<std::vector<T>> initial_vector) const;
+    // TODO document AssertAndGetHeight
     int AssertAndGetHeight(std::vector<std::vector<T>> initial_vector) const;
-    // TODO document GetLongestElemLength()
+    // TODO document GetLongestElemLength
     std::optional<T> GetLongestElemLength() const;
-    // TODO document CopyMatrix(const Matrix& other)
+    // TODO document CopyMatrix
     void CopyMatrix(const Matrix& other);
 public:
     /**
@@ -49,16 +53,19 @@ public:
     // undefined behaviour when given size is larger than array's length
     Matrix(std::vector<std::vector<T>> initial_vector);
 
-    // TODO document ~Matrix?
+    // TODO document ~Matrix
     ~Matrix();
 
     // TODO document copy constructor
     Matrix(const Matrix& other);
-    // TODO implement move constructor
-    Matrix(Matrix&& other);
+    // TODO document move constructor
+    Matrix(Matrix&& other) noexcept;
 
     // TODO document operator=()
     Matrix& operator=(const Matrix& other);
+
+    // TODO is this correct? If so, document
+    Matrix& operator=(Matrix&& other) noexcept;
 
     // TODO comment ToString()
     std::string ToString() const;
@@ -67,10 +74,10 @@ public:
 template<typename T>
 Matrix<T>::Matrix(const int size_y, const int size_x, const T initial_value)
         : size_y(size_y), size_x(size_x) {
-    // throws an invalid_argument if dimensions are not positive.
     AssertDimensions(size_y, size_x);
     InitialiseMatrix(initial_value);
 
+    // TODO remove/refactor this cout
     std::cout << "Parametric constructor" << std::endl;
 }
 
@@ -85,14 +92,18 @@ template<typename T>
 Matrix<T>::Matrix(const Matrix<T>& other)
         : size_y(other.size_y), size_x(other.size_x) {
     CopyMatrix(other);
+
+    // TODO remove/refactor this cout
     std::cout << "Copy constructor" << std::endl;
 }
 
 template<typename T>
-Matrix<T>::Matrix(Matrix&& other)
+Matrix<T>::Matrix(Matrix&& other) noexcept
         : size_y(other.size_y), size_x(other.size_x) {
     matrix_ = other.matrix_;
     other.matrix_ = nullptr;
+
+    // TODO remove/refactor this cout
     std::cout << "Move constructor" << std::endl;
 }
 
@@ -214,8 +225,21 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) {
     size_x = other.size_x;
     CopyMatrix(other);
 
+    // TODO remove/refactor this cout
     std::cout << "operator=" << std::endl;
     return *this;
+}
+
+template<typename T>
+Matrix<T>& Matrix<T>::operator=(Matrix&& other) noexcept {
+    size_y = other.size_y;
+    size_x = other.size_x;
+    matrix_ = other.matrix_;
+
+    other.matrix_ = nullptr;
+
+    // TODO remove/refactor this cout
+    std::cout << "Move operator=" << std::endl;
 }
 
 template<typename T>
