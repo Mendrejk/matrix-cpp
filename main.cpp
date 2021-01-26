@@ -17,7 +17,10 @@ int main() {
     test_copy = test_initial_value;
     std::cout << test_copy << std::endl;
 
-    std::cout << test_initial_vector.Add(test_copy).value() << std::endl;
-    std::cout << ((test_initial_vector - test_copy).value() - test_copy).value() << std::endl;
+    std::cout << test_initial_vector.Add(test_copy).value()
+                 .Add(test_copy).value() << std::endl;
+    std::cout << ((test_initial_vector - test_copy).value()
+                 - test_copy).value() << std::endl;
+
     return 0;
 }

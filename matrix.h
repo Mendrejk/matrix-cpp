@@ -53,7 +53,7 @@ public:
      */
     // I opted to use a vector as opposed to a pointer here to prevent
     // undefined behaviour when given size is larger than array's length
-    Matrix(std::vector<std::vector<T>> initial_vector);
+    explicit Matrix(std::vector<std::vector<T>> initial_vector);
 
     // TODO document ~Matrix
     ~Matrix();
@@ -66,26 +66,29 @@ public:
     // TODO document operator=()
     Matrix& operator=(const Matrix& other);
 
-    // TODO is this correct? If so, document
+    // TODO document this
     Matrix& operator=(Matrix&& other) noexcept;
 
     // TODO comment ToString()
-    std::string ToString() const;
+    [[nodiscard]] std::string ToString() const;
 
     // TODO comment Add()
-    // TODO add version for if this is an rvalue
-    std::optional<Matrix> Add(const Matrix& other) const;
+    // TODO add version for if other is an rvalue
+    std::optional<Matrix> Add(const Matrix& other) const &;
+
+    // TODO comment Add() &&
+    std::optional<Matrix> Add(const Matrix&) &&;
 
     // TODO comment operator+()
-    // TODO add version for if this is an rvalue
+    // TODO add version for if this or other is an rvalue
     std::optional<Matrix> operator+(const Matrix& other) const;
 
     // TODO comment Subtract()
-    // TODO add version for if this is an rvalue
+    // TODO add version for if this or other is an rvalue
     std::optional<Matrix> Subtract(const Matrix& other) const;
 
     // TODO comment operator-()
-    // TODO add version for if this is an rvalue
+    // TODO add version for if this or other is an rvalue
     std::optional<Matrix> operator-(const Matrix& other) const;
 };
 
@@ -249,7 +252,9 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) {
 }
 
 template<typename T>
-Matrix<T>& Matrix<T>::operator=(Matrix&& other) noexcept {
+Matrix<T>& Matrix<T>::operator=(Matrix<T>&& other) noexcept {
+    // FIXME remove old matrix
+
     size_y_ = other.size_y_;
     size_x_ = other.size_x_;
     matrix_ = other.matrix_;
@@ -301,9 +306,9 @@ std::string Matrix<T>::ToString() const {
 }
 
 template<typename T>
-std::optional<Matrix<T>> Matrix<T>::Add(const Matrix& other) const {
+std::optional<Matrix<T>> Matrix<T>::Add(const Matrix<T>& other) const & {
     if (HasSameDimensions(other)) {
-        Matrix addition(*this);
+        Matrix<T> addition(*this);
 
         for (int i = 0; i < size_y_; i++) {
             for (int j = 0; j < size_x_; j++) {
@@ -313,17 +318,34 @@ std::optional<Matrix<T>> Matrix<T>::Add(const Matrix& other) const {
 
         return addition;
     } else {
-        return { };
+        return {};
     }
 }
 
 template<typename T>
-std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix &other) const {
+std::optional<Matrix<T>> Matrix<T>::Add(const Matrix<T>& other) && {
+    if (HasSameDimensions(other)) {
+        for (int i = 0; i < size_y_; i++) {
+            for (int j = 0; j < size_x_; j++) {
+                matrix_[i][j] += other.matrix_[i][j];
+            }
+        }
+
+        // TODO remove this cout
+        std::cout << "rvalue add" << std::endl;
+        return std::move(*this);
+    } else {
+        return {};
+    }
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix<T> &other) const {
     return Add(other);
 }
 
 template<typename T>
-std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix &other) const {
+std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix<T> &other) const {
     if (HasSameDimensions(other)) {
         Matrix subtraction(*this);
 
@@ -340,12 +362,12 @@ std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix &other) const {
 }
 
 template<typename T>
-std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix &other) const {
+std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &other) const {
     return Subtract(other);
 }
 
 template<typename T>
-bool Matrix<T>::HasSameDimensions(const Matrix &other) const {
+bool Matrix<T>::HasSameDimensions(const Matrix<T> &other) const {
     return (size_x_ == other.size_x_ && size_y_ == other.size_y_);
 }
 
