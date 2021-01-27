@@ -17,6 +17,7 @@ private:
     int size_x_;
     int size_y_;
     T** matrix_;
+    bool is_vector_;
 
     // TODO document InitialiseMatrix(T)
     void InitialiseMatrix(T initial_value);
@@ -34,6 +35,8 @@ private:
     void CopyMatrix(const Matrix& other);
     // TODO document
     [[nodiscard]] bool HasSameDimensions(const Matrix& other) const;
+
+    [[nodiscard]] bool CheckIsVector() const;
 public:
     /**
      * Initialises a new empty Matrix sized size_y_ * size_x_ filled with
@@ -123,6 +126,7 @@ Matrix<T>::Matrix(const int size_y, const int size_x, const T initial_value)
         : size_y_(size_y), size_x_(size_x) {
     AssertDimensions(size_y, size_x);
     InitialiseMatrix(initial_value);
+    is_vector_ = CheckIsVector();
 
     // TODO remove/refactor this cout
     std::cout << "Parametric constructor" << std::endl;
@@ -133,12 +137,14 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> initial_vector)
         : size_y_(AssertAndGetHeight(initial_vector)),
           size_x_(AssertAndGetWidth(initial_vector)) {
     InitialiseMatrix(initial_vector);
+    is_vector_ = CheckIsVector();
 }
 
 template<typename T>
 Matrix<T>::Matrix(const Matrix<T>& other)
         : size_y_(other.size_y_), size_x_(other.size_x_) {
     CopyMatrix(other);
+    is_vector_ = CheckIsVector();
 
     // TODO remove/refactor this cout
     std::cout << "Copy constructor" << std::endl;
@@ -147,6 +153,7 @@ Matrix<T>::Matrix(const Matrix<T>& other)
 template<typename T>
 Matrix<T>::Matrix(Matrix&& other) noexcept
         : size_y_(other.size_y_), size_x_(other.size_x_) {
+    is_vector_ = other.is_vector_;
     matrix_ = other.matrix_;
     other.matrix_ = nullptr;
 
@@ -270,6 +277,7 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) {
 
     size_y_ = other.size_y_;
     size_x_ = other.size_x_;
+    is_vector_ = other.is_vector_;
     CopyMatrix(other);
 
     // TODO remove/refactor this cout
@@ -279,10 +287,14 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other) {
 
 template<typename T>
 Matrix<T>& Matrix<T>::operator=(Matrix<T>&& other) noexcept {
-    // FIXME remove old matrix
+    for (int i = 0; i < size_y_; i++) {
+        delete[] matrix_[i];
+    }
+    delete[] matrix_;
 
     size_y_ = other.size_y_;
     size_x_ = other.size_x_;
+    is_vector_ = other.is_vector_;
     matrix_ = other.matrix_;
 
     other.matrix_ = nullptr;
@@ -473,6 +485,11 @@ std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &&other) &&{
 template<typename T>
 bool Matrix<T>::HasSameDimensions(const Matrix<T> &other) const {
     return (size_x_ == other.size_x_ && size_y_ == other.size_y_);
+}
+
+template<typename T>
+bool Matrix<T>::CheckIsVector() const{
+    return (size_y_ == 1 || size_x_ == 1);
 }
 
 template<typename T>
