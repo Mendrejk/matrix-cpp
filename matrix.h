@@ -77,11 +77,25 @@ public:
     std::optional<Matrix> Add(const Matrix& other) const &;
 
     // TODO comment Add() &&
-    std::optional<Matrix> Add(const Matrix&) &&;
+    std::optional<Matrix> Add(const Matrix& other) &&;
+
+    // TODO comment Add(&&)
+    std::optional<Matrix> Add(const Matrix&& other) const &;
 
     // TODO comment operator+()
     // TODO add version for if this or other is an rvalue
-    std::optional<Matrix> operator+(const Matrix& other) const;
+    std::optional<Matrix> operator+(const Matrix& other) const &;
+
+    // TODO document operator+() &&
+    // FIXME this does not properly use move constructor
+    // because wrong Add() overload is called()
+    std::optional<Matrix> operator+(const Matrix& other) &&;
+
+    // TODO document operator+(&&) &
+    std::optional<Matrix> operator+(const Matrix&& other) &;
+
+    // TODO document operator+(&&) &&
+    std::optional<Matrix> operator+(const Matrix&& other) &&;
 
     // TODO comment Subtract()
     // TODO add version for if this or other is an rvalue
@@ -340,7 +354,39 @@ std::optional<Matrix<T>> Matrix<T>::Add(const Matrix<T>& other) && {
 }
 
 template<typename T>
-std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix<T> &other) const {
+std::optional<Matrix<T>> Matrix<T>::Add(const Matrix&& other) const & {
+    if (HasSameDimensions(other)) {
+        for (int i = 0; i < size_y_; i++) {
+            for (int j = 0; j < size_x_; j++) {
+                other.matrix_[i][j] += matrix_[i][j];
+            }
+        }
+
+        // TODO remove this cout
+        std::cout << "other rvalue add" << std::endl;
+        return std::move(other);
+    } else {
+        return {};
+    }
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix<T> &other) const & {
+    return Add(other);
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix<T>& other) && {
+    return Add(other);
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix<T>&& other) & {
+    return Add(other);
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix<T>&& other) && {
     return Add(other);
 }
 

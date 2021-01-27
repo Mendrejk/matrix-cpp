@@ -22,5 +22,7 @@ int main() {
     std::cout << ((test_initial_vector - test_copy).value()
                  - test_copy).value() << std::endl;
 
+    ((test_initial_vector + test_copy).value() + test_copy).value();
+
     return 0;
 }
