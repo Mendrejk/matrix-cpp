@@ -73,7 +73,6 @@ public:
     [[nodiscard]] std::string ToString() const;
 
     // TODO comment Add()
-    // TODO add version for if other is an rvalue
     std::optional<Matrix> Add(const Matrix& other) const &;
 
     // TODO comment Add() &&
@@ -88,7 +87,7 @@ public:
 
     // TODO document operator+() &&
     // FIXME this does not properly use move constructor
-    // because wrong Add() overload is called()
+    // FIXME because wrong Add() overload is called()
     std::optional<Matrix> operator+(const Matrix& other) &&;
 
     // TODO document operator+(&&) &
@@ -98,12 +97,25 @@ public:
     std::optional<Matrix> operator+(const Matrix&& other) &&;
 
     // TODO comment Subtract()
-    // TODO add version for if this or other is an rvalue
-    std::optional<Matrix> Subtract(const Matrix& other) const;
+    std::optional<Matrix> Subtract(const Matrix& other) const &;
 
-    // TODO comment operator-()
-    // TODO add version for if this or other is an rvalue
-    std::optional<Matrix> operator-(const Matrix& other) const;
+    // TODO document Subtract() &&
+    std::optional<Matrix> Subtract(const Matrix& other) &&;
+
+    // TODO document Subtract(&&)
+    std::optional<Matrix> Subtract(const Matrix&& other) const &;
+
+    // TODO document operator-()
+    std::optional<Matrix> operator-(const Matrix& other) const &;
+
+    // TODO document operator-() &&
+    std::optional<Matrix> operator-(const Matrix& other) &&;
+
+    // TODO document operator-(&&) &
+    std::optional<Matrix> operator-(const Matrix&& other) &;
+
+    // TODO document operator-(&&) &&
+    std::optional<Matrix> operator-(const Matrix&& other) &&;
 };
 
 template<typename T>
@@ -391,7 +403,7 @@ std::optional<Matrix<T>> Matrix<T>::operator+(const Matrix<T>&& other) && {
 }
 
 template<typename T>
-std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix<T> &other) const {
+std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix<T> &other) const & {
     if (HasSameDimensions(other)) {
         Matrix subtraction(*this);
 
@@ -403,12 +415,58 @@ std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix<T> &other) const {
 
         return subtraction;
     } else {
-        return { };
+        return {};
+    }
+}
+
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix<T> &other) &&{
+    if (HasSameDimensions(other)) {
+        for (int i = 0; i < size_y_; i++) {
+            for (int j = 0; j < size_x_; j++) {
+                matrix_[i][j] -= other.matrix_[i][j];
+            }
+        }
+
+        return *this;
+    } else {
+        return {};
     }
 }
 
 template<typename T>
-std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &other) const {
+std::optional<Matrix<T>> Matrix<T>::Subtract(const Matrix<T> &&other) const &{
+    if (HasSameDimensions(other)) {
+        for (int i = 0; i < size_y_; i++) {
+            for (int j = 0; j < size_x_; j++) {
+                other.matrix_[i][j] -= matrix_[i][j];
+            }
+        }
+
+        return other;
+    } else {
+        return {};
+    }
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &other) const & {
+    return Subtract(other);
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &other) &&{
+    return Subtract(other);
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &&other) &{
+    return Subtract(other);
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &&other) &&{
     return Subtract(other);
 }
 
