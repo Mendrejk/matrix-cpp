@@ -119,6 +119,14 @@ public:
 
     // TODO document operator-(&&) &&
     std::optional<Matrix> operator-(const Matrix&& other) &&;
+
+    // TODO document Multiply()
+    // FIXME return type Matrix or Matrix&? same below
+    Matrix Multiply(T multiplier) const &;
+
+    // TODO document Multiply() &&
+    Matrix Multiply(T multiplier) &&;
+
 };
 
 template<typename T>
@@ -480,6 +488,28 @@ std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &&other) &{
 template<typename T>
 std::optional<Matrix<T>> Matrix<T>::operator-(const Matrix<T> &&other) &&{
     return Subtract(other);
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::Multiply(const T multiplier) const &{
+    Matrix multiplication(*this);
+
+    for (int i = 0; i < size_y_; i++) {
+        for (int j = 0; j < size_x_; j++) {
+            multiplication.matrix_[i][j] *= multiplier;
+        }
+    }
+    return multiplication;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::Multiply(const T multiplier) &&{
+    for (int i = 0; i < size_y_; i++) {
+        for (int j = 0; j < size_x_; j++) {
+            matrix_[i][j] *= multiplier;
+        }
+    }
+    return *this;
 }
 
 template<typename T>
