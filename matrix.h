@@ -127,6 +127,10 @@ public:
     // TODO document Multiply() &&
     Matrix Multiply(T multiplier) &&;
 
+    Matrix operator*(T multiplier) const &;
+
+    Matrix operator*(T multiplier) &&;
+
 };
 
 template<typename T>
@@ -510,6 +514,17 @@ Matrix<T> Matrix<T>::Multiply(const T multiplier) &&{
         }
     }
     return *this;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator*(T multiplier) const & {
+    return Multiply(multiplier);
+}
+
+// FIXME should there be a const here?
+template<typename T>
+Matrix<T> Matrix<T>::operator*(T multiplier) &&{
+    return Multiply(multiplier);
 }
 
 template<typename T>

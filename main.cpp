@@ -24,5 +24,7 @@ int main() {
 
     ((test_initial_vector + test_copy).value() + test_copy).value();
 
+    std::cout << test_initial_vector * -3 << std::endl;
+
     return 0;
 }
