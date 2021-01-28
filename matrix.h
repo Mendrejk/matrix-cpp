@@ -37,6 +37,9 @@ private:
     [[nodiscard]] bool HasSameDimensions(const Matrix& other) const;
 
     [[nodiscard]] bool CheckIsVector() const;
+
+    // TODO document private constructor Matrix(int size_y, int size_x)
+    Matrix(int size_y, int size_x);
 public:
     /**
      * Initialises a new empty Matrix sized size_y_ * size_x_ filled with
@@ -71,6 +74,8 @@ public:
 
     // TODO document this
     Matrix& operator=(Matrix&& other) noexcept;
+
+    // TODO implement operator[]
 
     // TODO comment ToString()
     [[nodiscard]] std::string ToString() const;
@@ -131,6 +136,25 @@ public:
 
     Matrix operator*(T multiplier) &&;
 
+    // TODO document DotProduct
+    // only works if this and other are vectors
+    std::optional<T> DotProduct(const Matrix& other_vector) const;
+
+    // TODO document Multiply()
+    // TODO overload for MS
+    std::optional<Matrix<T>> Multiply(const Matrix& other) const;
+
+    // TODO document operator *
+    // cant both calculate dot product and multiply matrices
+    // ^ FAKE dont do operator dotProduct
+    // TODO MS
+    std::optional<Matrix<T>> operator*(const Matrix& other) const;
+
+    // TODO document VectorFromColumn()
+    std::optional<Matrix<T>> VectorFromColumn(int column_index) const;
+
+    // TODO document VectorFromRow()
+    std::optional<Matrix<T>> VectorFromRow(int row_index) const;
 };
 
 template<typename T>
@@ -528,6 +552,85 @@ Matrix<T> Matrix<T>::operator*(T multiplier) &&{
 }
 
 template<typename T>
+std::optional<T> Matrix<T>::DotProduct(const Matrix<T>& other_vector) const {
+    T dot_product = matrix_[0][0] * other_vector.matrix_[0][0];
+    if (size_y_ == 1 && other_vector.size_y_ == 1
+            && size_x_ == other_vector.size_x_) {
+        for (int i = 1; i < size_x_; i++) {
+            dot_product += matrix_[0][i] * other_vector.matrix_[0][i];
+        }
+    } else if (size_y_ == 1 && other_vector.size_x_ == 1
+            && size_x_ == other_vector.size_y_) {
+        for (int i = 1; i < size_x_; i++) {
+            dot_product += matrix_[0][i] * other_vector.matrix_[i][0];
+        }
+    } else if (size_x_ == 1 && other_vector.size_x_ == 1
+            && size_y_ == other_vector.size_y_) {
+        for (int i = 1; i < size_y_; i++) {
+            dot_product += matrix_[i][0] * other_vector.matrix_[i][0];
+        }
+    } else if (size_x_ == 1 && other_vector.size_y_ == 1
+            && size_y_ == other_vector.size_x_) {
+        for (int i = 1; i < size_y_; i++) {
+            dot_product += matrix_[i][0] * other_vector.matrix_[0][i];
+        }
+    } else {
+        return {};
+    }
+    return dot_product;
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::Multiply(const Matrix<T>& other) const {
+    if (is_vector_ && other.is_vector_) {
+        // can't multiply two vectors to return a matrix/vector
+        return {};
+    } else if (size_x_ == other.size_y_) {
+        Matrix result(size_y_, other.size_x_);
+        for (int i = 0; i < result.size_y_; i++) {
+            for (int j = 0; j < result.size_x_; j++) {
+                result.matrix_[i][j] = VectorFromRow(i).value().DotProduct(other.VectorFromColumn(j).value()).value();
+            }
+        }
+        return result;
+    } else if (is_vector_ && size_y_ == other.size_y_) {
+        Matrix result(size_x_, other.size_x_);
+        for (int i = 0; i < result.size_y_; i++) {
+            for (int j = 0; j < result.size_x_; j++) {
+                result.matrix_[i][j] = VectorFromColumn(i).value().DotProduct(other.VectorFromColumn(j).value()).value();
+            }
+        }
+        return result;
+    } else if (other.is_vector_ && size_x_ == other.size_x_) {
+        Matrix result(size_y_, other.size_y_);
+        for (int i = 0; i < result.size_y_; i++) {
+            for (int j = 0; j < result.size_x_; j++) {
+                result.matrix_[i][j] = VectorFromRow(i).value().DotProduct(other.VectorFromRow(j).value()).value();
+            }
+        }
+        return result;
+    } else {
+        // incompatible dimensions
+        return {};
+    }
+}
+
+
+template<typename T>
+Matrix<T>::Matrix(const int size_y, const int size_x)
+        : size_y_(size_y), size_x_(size_x), is_vector_(CheckIsVector()) {
+            matrix_ = new T*[size_y];
+            for (int i = 0; i < size_y; i++) {
+                matrix_[i] = new T[size_x];
+            }
+        }
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::operator*(const Matrix &other) const {
+    return Multiply(other);
+}
+
+template<typename T>
 bool Matrix<T>::HasSameDimensions(const Matrix<T> &other) const {
     return (size_x_ == other.size_x_ && size_y_ == other.size_y_);
 }
@@ -535,6 +638,32 @@ bool Matrix<T>::HasSameDimensions(const Matrix<T> &other) const {
 template<typename T>
 bool Matrix<T>::CheckIsVector() const{
     return (size_y_ == 1 || size_x_ == 1);
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::VectorFromColumn(int column_index) const {
+    if (column_index < size_x_) {
+        Matrix column_vector(size_y_, 1);
+        for (int i = 0; i < size_y_; i++) {
+            column_vector.matrix_[i][0] = matrix_[i][column_index];
+        }
+        return column_vector;
+    } else {
+        return {};
+    }
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::VectorFromRow(int row_index) const {
+    if (row_index < size_y_) {
+        Matrix row_vector(1, size_x_);
+        for (int i = 0; i < size_x_; i++) {
+            row_vector.matrix_[0][i] = matrix_[row_index][i];
+        }
+        return row_vector;
+    } else {
+        return {};
+    }
 }
 
 template<typename T>
