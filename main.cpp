@@ -1,6 +1,7 @@
 #include <iostream>
-#include "matrix.h"
 #include <vector>
+#include "matrix.h"
+#include "file_io.cpp"
 
 int main() {
     Matrix<int> test_initial_value(4, 3, -1);
@@ -81,6 +82,19 @@ int main() {
     test_create[1].value()[1] = -17;
     std::cout << test_create << std::endl;
     std::cout << test_create.SetIdentityMatrix().value() << std::endl;
+
+    // FIXME absolute path
+    std::cout << Matrix<int>(file_io::LoadMatrix2D<int>(R"(D:\Dev\matrix-cpp\data_int.txt)").value()) << std::endl;
+    std::cout << Matrix<float>(file_io::LoadMatrix2D<float>(R"(D:\Dev\matrix-cpp\data_float.txt)").value()) << std::endl;
+    std::vector<std::vector<double>> tst_v_d
+        {
+            {-1, 1},
+            {1, -1},
+            {-1, 1},
+            {-1, 1}
+        };
+    Matrix<double> tst(tst_v_d);
+    std::cout << (Matrix<double>(file_io::LoadMatrix2D<double>(R"(D:\Dev\matrix-cpp\data_double.txt)").value()) * tst).value() << std::endl;
 
     return 0;
 }
