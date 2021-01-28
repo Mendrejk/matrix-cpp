@@ -160,6 +160,21 @@ public:
     // TODO document Transpose()
     // FIXME returning Matrix<T> crashes in toString - gets null reference
     Matrix<T> Transpose();
+
+    // TODO document CreateMatrix
+    static std::optional<Matrix<T>> CreateMatrix(const int size_y, const int size_x, const T initial_value);
+
+    // TODO document SetValue()
+    bool SetValue(int index_y, int index_x, T value);
+
+    // TODO document GetValue()
+    std::optional<T> GetValue(int index_y, int index_x);
+
+    // TODO document operator[] get
+    std::optional<T*> operator[](int index_y);
+
+    // TODO document SetIdentityMatrix()
+    std::optional<Matrix<T>> SetIdentityMatrix();
 };
 
 template<typename T>
@@ -680,6 +695,57 @@ Matrix<T> Matrix<T>::Transpose() {
         }
     }
     return transposition;
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::CreateMatrix(const int size_y, const int size_x, const T initial_value) {
+    return Matrix(size_y, size_x, initial_value);
+}
+
+template<typename T>
+bool Matrix<T>::SetValue(int index_y, int index_x, T value) {
+    if (index_y < size_y_ && index_x < size_x_) {
+        matrix_[index_y][index_x] = value;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+template<typename T>
+std::optional<T> Matrix<T>::GetValue(int index_y, int index_x) {
+    if (index_y < size_y_ && index_x < size_x_) {
+        return matrix_[index_y][index_x];
+    } else {
+        return {};
+    }
+}
+
+template<typename T>
+std::optional<T*> Matrix<T>::operator[](int index_y) {
+    if (index_y < size_y_) {
+        return matrix_[index_y];
+    } else {
+        return {};
+    }
+}
+
+template<typename T>
+std::optional<Matrix<T>> Matrix<T>::SetIdentityMatrix() {
+    if (size_y_ == size_x_) {
+        for (int i = 0 ; i < size_y_; i++) {
+            for (int j = 0; j < size_x_; j++) {
+                if (i == j) {
+                    matrix_[i][j] = 1;
+                } else {
+                    matrix_[i][j] = 0;
+                }
+            }
+        }
+        return *this;
+    } else {
+        return {};
+    }
 }
 
 template<typename T>

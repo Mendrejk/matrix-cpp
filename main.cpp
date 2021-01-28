@@ -75,5 +75,12 @@ int main() {
     std::cout << std::endl;
 
     std::cout << test_initial_vector.Transpose() << std::endl;
+
+    Matrix<int> test_create = Matrix<int>::CreateMatrix(3, 3, 2).value();
+    std::cout << test_create[0].value()[1] << std::endl;
+    test_create[1].value()[1] = -17;
+    std::cout << test_create << std::endl;
+    std::cout << test_create.SetIdentityMatrix().value() << std::endl;
+
     return 0;
 }
