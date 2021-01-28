@@ -175,6 +175,9 @@ public:
 
     // TODO document SetIdentityMatrix()
     std::optional<Matrix<T>> SetIdentityMatrix();
+
+    // TODO document operator==
+    bool operator==(const Matrix& other) const;
 };
 
 template<typename T>
@@ -745,6 +748,22 @@ std::optional<Matrix<T>> Matrix<T>::SetIdentityMatrix() {
         return *this;
     } else {
         return {};
+    }
+}
+
+template<typename T>
+bool Matrix<T>::operator==(const Matrix<T>& other) const {
+    if (size_y_ == other.size_y_ && size_x_ == other.size_x_) {
+        for (int i = 0; i < size_y_; i++) {
+            for (int j = 0; j < size_x_; j++) {
+                if (matrix_[i][j] != other.matrix_[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    } else {
+        return false;
     }
 }
 
