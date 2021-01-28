@@ -155,6 +155,11 @@ public:
 
     // TODO document VectorFromRow()
     std::optional<Matrix<T>> VectorFromRow(int row_index) const;
+
+    // TODO MS for this
+    // TODO document Transpose()
+    // FIXME returning Matrix<T> crashes in toString - gets null reference
+    Matrix<T> Transpose();
 };
 
 template<typename T>
@@ -664,6 +669,17 @@ std::optional<Matrix<T>> Matrix<T>::VectorFromRow(int row_index) const {
     } else {
         return {};
     }
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::Transpose() {
+    Matrix transposition(size_x_, size_y_);
+    for (int i = 0; i < size_y_; i++) {
+        for (int j = 0; j < size_x_; j++) {
+            transposition.matrix_[j][i] = matrix_[i][j];
+        }
+    }
+    return transposition;
 }
 
 template<typename T>

@@ -72,6 +72,8 @@ int main() {
     Matrix<int> m_v_vtm(v_vtm);
     Matrix<int> m_m_vtm(m_vtm);
     std::cout << (m_v_vtm * m_m_vtm).value() << std::endl;
+    std::cout << std::endl;
 
+    std::cout << test_initial_vector.Transpose() << std::endl;
     return 0;
 }
