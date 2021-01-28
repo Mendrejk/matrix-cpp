@@ -197,6 +197,9 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> initial_vector)
           size_x_(AssertAndGetWidth(initial_vector)) {
     InitialiseMatrix(initial_vector);
     is_vector_ = CheckIsVector();
+
+    // TODO remove/refactor this cout
+    std::cout << "Parametric constructor" << std::endl;
 }
 
 template<typename T>
