@@ -156,17 +156,16 @@ namespace matrix_test {
     }
 
     bool TestReadFromFile() {
-        // FIXME absolute paths
-        std::string path_int = R"(D:\Dev\matrix-cpp\data_int.txt)";
-        std::string path_float = R"(D:\Dev\matrix-cpp\data_float.txt)";
-        std::string path_double = R"(D:\Dev\matrix-cpp\data_double.txt)";
+        std::string path_int = R"(data_int.txt)";
+        std::string path_float = R"(data_float.txt)";
+        std::string path_double = R"(data_double.txt)";
 
         std::optional<std::vector<std::vector<int>>> result_int =
             file_io::LoadMatrix2D<int>(path_int);
         std::optional<std::vector<std::vector<float>>> result_float =
-                file_io::LoadMatrix2D<float>(path_float);
+            file_io::LoadMatrix2D<float>(path_float);
         std::optional<std::vector<std::vector<double>>> result_double =
-                file_io::LoadMatrix2D<double>(path_double);
+            file_io::LoadMatrix2D<double>(path_double);
 
         std::vector<std::vector<int>> vector_int =
             {
